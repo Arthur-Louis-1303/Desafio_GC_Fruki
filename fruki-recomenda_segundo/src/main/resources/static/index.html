@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel do vendedor · Fruki</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<style>
+:root{--bg:#f4f6f3;--panel:#e0e6df;--ink:#1d2a22;--mut:#56655b;--card:#f4f6f3;--acc:#2c7a4b;--line:#c3cdc3;--hot:#e0702b;--cold:#4a7fd1;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a15;--panel:#1d2923;--ink:#e8efe9;--mut:#9fb0a4;--card:#141d18;--acc:#5fc08a;--line:#34453b}}
+:root[data-theme="dark"]{--bg:#121a15;--panel:#1d2923;--ink:#e8efe9;--mut:#9fb0a4;--card:#141d18;--acc:#5fc08a;--line:#34453b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Bricolage Grotesque",system-ui,sans-serif;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto 14px}
+h1{font-size:22px;font-weight:800;margin:0}
+h2{font-size:18px;font-weight:800;margin:0 0 10px}
+select,button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+button:focus-visible,select:focus-visible,.tile:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+main{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:1200px;margin:0 auto}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+section{background:var(--panel);border-radius:22px;padding:18px;min-width:0}
+.sub{color:var(--mut);font-size:13px;margin:-6px 0 10px}
+.map{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-width:420px}
+.tile{aspect-ratio:1;border-radius:8px;border:0;color:#fff;font-weight:600;font-size:12px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.tile small{font-weight:400;font-size:10px}
+.tile[aria-pressed=true]{outline:3px solid var(--ink)}
+.days{display:flex;gap:6px;margin-top:12px;overflow-x:auto}
+.day{flex:1;min-width:48px;background:var(--card);border-radius:10px;padding:6px 4px;text-align:center;font-size:12px}
+.day b{display:block;font-size:15px}
+.rain{color:var(--cold)}
+.bars{display:flex;align-items:stretch;gap:10px;height:280px;padding-top:6px}
+.bar{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;text-align:center;font-size:12px;color:var(--ink)}
+.bar .col{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.bar .lb{min-height:2.6em;line-height:1.2}
+#backrow{margin-bottom:6px}
+.bar span.t{width:70%;max-width:56px;border-radius:8px 8px 0 0;background:var(--acc);display:block}
+.bar.f span.t{cursor:pointer}
+.bar:hover span.t{filter:brightness(1.12)}
+.ev{list-style:none;margin:0;padding:0}
+.ev li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ev li:last-child{border:0}
+.tag{font-size:11px;background:var(--card);border-radius:20px;padding:1px 8px;color:var(--mut);margin-left:6px}
+.cli{background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.cli>button{all:unset;display:block;width:100%;cursor:pointer}
+.cli>button:focus-visible{outline:2px solid var(--acc)}
+.rec{margin:8px 0 0;padding:0;list-style:none;display:none}
+.cli.open .rec{display:block}
+.rec li{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-top:1px solid var(--line)}
+.why{font-size:12px;color:var(--mut)}
+.sc{font-weight:800;color:var(--acc)}
+.note{max-width:1200px;margin:12px auto 0;color:var(--mut);font-size:12px}
+#q{width:100%;margin-bottom:8px;padding:9px 12px;border-radius:10px;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chip{border-radius:20px;padding:4px 12px}
+.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:600}
+.mt{background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:13px}
+.mbar{height:8px;background:var(--line);border-radius:6px;margin-top:6px;overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--acc)}
+.sug{margin-top:8px;border-left:4px solid var(--acc);padding-left:10px}
+.sugt{font-weight:800;font-size:13px;color:var(--acc);margin-bottom:4px}
+.srow{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:6px 0;border-top:1px solid var(--line)}
+.srow select{width:100%;font-weight:600;color:var(--ink)}
+.srow .why{grid-column:1/-1}
+.sc{background:var(--acc);color:var(--bg);border-radius:20px;padding:0 10px;font-weight:800;align-self:center}
+.ajus{color:var(--hot);font-weight:600}
+.cli .sug{display:none}
+.cli.open .sug{display:block}
+.chd::after{content:"▾";float:right;color:var(--mut)}
+.cli.open .chd::after{content:"▴"}
+</style>
+</head>
+<body>
+<header>
+  <h1>Painel do vendedor</h1>
+  <label>Vendedor <select id="vend"></select></label>
+</header>
+<main>
+  <section aria-labelledby="h-clima">
+    <h2 id="h-clima">Clima da próxima semana</h2>
+    <p class="sub" id="clima-sub">Toque em um estado para ver os 7 dias.</p>
+    <div class="map" id="map"></div>
+    <div class="days" id="days"></div>
+  </section>
+  <section aria-labelledby="h-vendas">
+    <h2 id="h-vendas">Vendas por família de produtos</h2>
+    <p class="sub" id="v-sub">Unidades vendidas em 12 meses (mil). Toque em uma barra para ver os produtos.</p>
+    <div id="backrow"></div><div class="bars" id="bars"></div>
+  </section>
+  <section aria-labelledby="h-ev">
+    <h2 id="h-ev">Eventos e datas comemorativas</h2>
+    <ul class="ev" id="ev"></ul>
+  </section>
+  <section aria-labelledby="h-cli">
+    <h2 id="h-cli">Meus clientes</h2>
+    <p class="sub">Busque, filtre por tipo de estabelecimento e troque a sugestão de cada cliente para bater a meta.</p>
+    <div id="meta"></div>
+    <input id="q" type="search" placeholder="Buscar cliente ou cidade" aria-label="Buscar cliente ou cidade">
+    <div class="chips" id="chips" role="group" aria-label="Filtrar por tipo de estabelecimento"></div>
+    <p class="sub" id="cnt"></p>
+    <div id="cli"></div>
+  </section>
+</main>
+<p class="note">Protótipo com dados simulados: clima, vendas e clientes. A pontuação combina afinidade com clientes do mesmo segmento, previsão de temperatura e o próximo evento.</p>
+<script>
+const $=id=>document.getElementById(id);
+const GRID={RR:[2,0],AP:[3,0],AM:[2,1],PA:[3,1],MA:[4,1],PI:[5,1],CE:[6,1],RN:[7,1],AC:[1,2],RO:[2,2],MT:[3,2],TO:[4,2],BA:[5,2],PE:[6,2],PB:[7,2],GO:[3,3],DF:[4,3],MG:[5,3],SE:[6,3],AL:[7,3],MS:[3,4],SP:[4,4],RJ:[5,4],ES:[6,4],PR:[4,5],SC:[4,6],RS:[4,7]};
+const REG={N:["RR","AP","AM","PA","AC","RO","TO"],NE:["MA","PI","CE","RN","BA","PE","PB","SE","AL"],CO:["MT","GO","DF","MS"],SE:["MG","SP","RJ","ES"],S:["PR","SC","RS"]};
+const BASE={N:32,NE:31,CO:30,SE:28,S:23};
+const base=uf=>BASE[Object.keys(REG).find(r=>REG[r].includes(uf))];
+const hash=s=>[...s].reduce((a,c)=>a+c.charCodeAt(0),0);
+const fc=uf=>{const h=hash(uf);return Array.from({length:7},(_,d)=>({t:Math.round(base(uf)+3*Math.sin((d+h)*.9)+(h%3)-1),r:(h*7+d*13)%55+(base(uf)<25?15:0)}))};
+const avg=uf=>fc(uf).reduce((a,x)=>a+x.t,0)/7;
+const color=t=>`hsl(${Math.max(8,Math.min(215,215-(t-18)*14))} 62% 44%)`;
+const wd=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+let uf="RS";
+
+function drawMap(){
+  $("map").innerHTML="";
+  Object.entries(GRID).forEach(([u,[c,r]])=>{
+    const b=document.createElement("button");b.className="tile";b.style.gridColumn=c+1;b.style.gridRow=r+1;
+    b.style.background=color(avg(u));b.setAttribute("aria-pressed",u===uf);
+    b.setAttribute("aria-label",`${u}, máxima média ${Math.round(avg(u))} graus`);
+    b.innerHTML=`${u}<small>${Math.round(avg(u))}°</small>`;
+    b.onclick=()=>{uf=u;drawMap();drawDays()};$("map").appendChild(b)});
+}
+function drawDays(){
+  const now=new Date();
+  $("clima-sub").textContent=`${uf}: máxima média de ${Math.round(avg(uf))}°C. ${avg(uf)>=28?"Semana quente: bom momento para bebidas geladas.":avg(uf)<=22?"Semana mais fria: aposte em chás e energéticos.":"Temperatura amena."}`;
+  $("days").innerHTML=fc(uf).map((x,i)=>{const d=new Date(now.getTime()+(i+1)*864e5);
+    return `<div class="day">${wd[d.getDay()]}<b>${x.t}°</b><span class="rain">${x.r}%</span></div>`}).join("");
+}
+
+const FAM={
+ "Refrigerante PET":{v:78,p:{"Guaraná 2L":32,"Cola 2L":21,"Laranja 2L":13,"Guaraná Zero 2L":12}},
+ "Refrigerante lata":{v:45,p:{"Guaraná 350 ml":19,"Cola 350 ml":14,"Uva 350 ml":12}},
+ "Energético lata":{v:30,p:{"Elev 473 ml":18,"Elev Zero 473 ml":12}},
+ "Água":{v:38,p:{"Sem gás 1,5 L":22,"Com gás 500 ml":16}},
+ "Chás e sucos":{v:22,p:{"Chá limão 1,5 L":13,"Chá pêssego 1,5 L":9}}};
+const PROD=[
+ {id:1,n:"Guaraná 2L",f:"Refrigerante PET",hot:1},{id:2,n:"Cola 2L",f:"Refrigerante PET",hot:1},
+ {id:3,n:"Guaraná 350 ml",f:"Refrigerante lata",hot:1},{id:4,n:"Elev 473 ml",f:"Energético lata",hot:0},
+ {id:5,n:"Água sem gás 1,5 L",f:"Água",hot:1},{id:6,n:"Chá limão 1,5 L",f:"Chás e sucos",hot:1},
+ {id:7,n:"Guaraná Zero 2L",f:"Refrigerante PET",hot:0},{id:8,n:"Uva 350 ml",f:"Refrigerante lata",hot:0}];
+function drawBars(fam){
+  const d=fam?FAM[fam].p:Object.fromEntries(Object.entries(FAM).map(([k,v])=>[k,v.v]));
+  const max=Math.max(...Object.values(d));
+  $("h-vendas").textContent=fam?`Produtos: ${fam}`:"Vendas por família de produtos";
+  $("v-sub").textContent=fam?"Unidades vendidas em 12 meses (mil).":"Unidades vendidas em 12 meses (mil). Toque em uma coluna para ver os produtos.";
+  $("backrow").innerHTML=fam?`<button id="back">← Voltar às famílias</button>`:"";
+  $("bars").innerHTML=Object.entries(d).map(([k,v])=>
+    `<${fam?"div":"button"} class="bar ${fam?"":"f"}" data-k="${k}"><b>${v}</b><span class="col"><span class="t" style="height:${v/max*100}%"></span></span><span class="lb">${k}</span></${fam?"div":"button"}>`).join("");
+  if(fam)$("back").onclick=()=>drawBars();
+  else document.querySelectorAll(".bar.f").forEach(b=>b.onclick=()=>drawBars(b.dataset.k));
+}
+
+const EV=[["2026-11-02","Finados","Nacional",[]],["2026-11-20","Consciência Negra","Nacional",[]],["2026-11-27","Black Friday","Nacional",["Refrigerante PET","Refrigerante lata"]],
+["2026-12-25","Natal","Nacional",["Refrigerante PET","Refrigerante lata"]],["2026-12-31","Ano Novo","Nacional",["Energético lata","Refrigerante lata","Água"]],
+["2027-02-02","Festa de Iemanjá","Sul e Nordeste",["Água"]],["2027-02-09","Carnaval","Nacional",["Água","Energético lata","Refrigerante lata"]],
+["2027-03-28","Páscoa","Nacional",["Chás e sucos"]],["2027-05-09","Dia das Mães","Nacional",["Refrigerante PET","Chás e sucos"]]]
+.map(([d,n,t,b])=>({d:new Date(d+"T12:00:00"),n,t,b}));
+const days=e=>Math.ceil((e.d-new Date())/864e5);
+const evs=()=>EV.filter(e=>days(e)>=0).sort((a,b)=>a.d-b.d);
+function drawEv(){
+  $("ev").innerHTML=evs().map(e=>`<li><span>${e.n}<span class="tag">${e.t}</span><br><span class="why">${e.d.toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"})}</span></span><b>${days(e)===0?"hoje":"em "+days(e)+" d"}</b></li>`).join("");
+}
+
+const VEND={
+ "Rep. 33307 (RS)":[["Mercado Pinheiro","Canoas","RS","Mercado",[1,2,5]],["Padaria Trigo Bom","Porto Alegre","RS","Padaria",[1,3]],["Supermercado Lajeado","Lajeado","RS","Supermercado",[1,2,3,4]],["Minimercado Sol","Gravataí","RS","Mercadinho",[2]]],
+ "Rep. 31402 (Nordeste)":[["Mercadinho Central","Salvador","BA","Mercadinho",[1,3]],["Atacado Recife Sul","Recife","PE","Atacado",[1,2,4]],["Bar da Praça","Fortaleza","CE","Bar",[3]]],
+ "Rep. 30110 (Norte)":[["Mercado Rio Negro","Manaus","AM","Mercado",[1,2]],["Distribuidora Belém","Belém","PA","Atacado",[1,3,5]]]};
+function score(c,p){
+  const why=[];let s=hash(c[0]+p.n)%25+30;why.push("clientes do mesmo segmento compram");
+  if(avg(c[2])>=28&&p.hot){s+=15;why.push(`calor (${Math.round(avg(c[2]))}°C)`)}
+  const e=evs().find(e=>e.b.includes(p.f)&&days(e)<=60);
+  if(e){s+=12;why.push(`${e.n} em ${days(e)} d`)}
+  return{p,s,why}
+}
+function drawCliAntigo(){
+  const list=VEND[$("vend").value];
+  $("cli").innerHTML=list.map((c,i)=>{
+    const recs=PROD.filter(p=>!c[4].includes(p.id)).map(p=>score(c,p)).sort((a,b)=>b.s-a.s).slice(0,3);
+    return `<div class="cli" id="c${i}"><button aria-expanded="false"><b>${c[0]}</b> <span class="tag">${c[3]}</span><br><span class="why">${c[1]} - ${c[2]} · ${c[4].length} produtos no mix · ${Math.round(avg(c[2]))}°C na semana</span></button>
+    <ul class="rec">${recs.map(r=>`<li><span>${r.p.n}<br><span class="why">${r.why.join(" · ")}</span></span><span class="sc">${r.s}</span></li>`).join("")}</ul></div>`}).join("");
+  document.querySelectorAll(".cli>button").forEach((b,i)=>b.onclick=()=>{const o=b.parentElement.classList.toggle("open");b.setAttribute("aria-expanded",o);
+    if(o){uf=list[i][2];drawMap();drawDays()}});
+}
+const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const preco=p=>20+hash(p.n)%40;
+const sel={},abertos=new Set();let fSeg="Todos",busca="";
+function ranking(c){return PROD.filter(p=>!c[4].includes(p.id)).map(p=>score(c,p)).sort((a,b)=>b.s-a.s)}
+function drawCli(){
+  const v=$("vend").value,list=VEND[v],key=i=>v+i;
+  const segs=["Todos",...new Set(list.map(c=>c[3]))];
+  if(!segs.includes(fSeg))fSeg="Todos";
+  $("chips").innerHTML=segs.map(s=>`<button class="chip" aria-pressed="${s===fSeg}" data-s="${s}">${s}</button>`).join("");
+  document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{fSeg=b.dataset.s;drawCli()});
+  let total=0;
+  const cards=list.map((c,i)=>{
+    const rk=ranking(c),ids=sel[key(i)]||rk.slice(0,3).map(r=>r.p.id);
+    const rows=ids.map(id=>rk.find(r=>r.p.id===id));
+    total+=rows.reduce((a,r)=>a+preco(r.p),0);
+    return{c,i,rk,ids,rows};
+  });
+  const META=150*list.length,pct=Math.min(100,Math.round(total/META*100));
+  $("meta").innerHTML=`<div class="mt"><b>Meta da semana em itens novos:</b> R$ ${total} de R$ ${META} (${pct}%)<div class="mbar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div></div>`;
+  const q=norm(busca.trim());
+  const vis=cards.filter(x=>(fSeg==="Todos"||x.c[3]===fSeg)&&norm(x.c[0]+" "+x.c[1]).includes(q));
+  $("cnt").textContent=`${vis.length} de ${list.length} clientes`;
+  $("cli").innerHTML=vis.length?vis.map(({c,i,rk,ids,rows})=>`<div class="cli${abertos.has(key(i))?" open":""}"><button class="chd" data-i="${i}" aria-expanded="${abertos.has(key(i))}"><b>${c[0]}</b> <span class="tag">${c[3]}</span><br><span class="why">${c[1]} - ${c[2]} · ${c[4].length} produtos no mix · ${Math.round(avg(c[2]))}°C na semana</span></button>
+    <div class="sug"><div class="sugt">Oferecer agora</div>${rows.map((r,s)=>`<div class="srow"><select data-c="${i}" data-s="${s}" aria-label="Sugestão ${s+1} para ${c[0]}">${rk.filter(x=>x.p.id===ids[s]||!ids.includes(x.p.id)).map(x=>`<option value="${x.p.id}"${x.p.id===ids[s]?" selected":""}>${x.p.n} (${x.s})</option>`).join("")}</select><span class="sc">${r.s}</span><span class="why">${r.why.join(" · ")} · R$ ${preco(r.p)}/cx${ids[s]!==rk[s].p.id?' · <span class="ajus">ajustado por você</span>':""}</span></div>`).join("")}</div></div>`).join(""):`<p class="why">Nenhum cliente encontrado.</p>`;
+  document.querySelectorAll(".chd").forEach(b=>b.onclick=()=>{const i=b.dataset.i,k=key(i),o=!abertos.has(k);o?abertos.add(k):abertos.delete(k);b.parentElement.classList.toggle("open",o);b.setAttribute("aria-expanded",o);if(o){uf=list[i][2];drawMap();drawDays()}});
+  document.querySelectorAll(".srow select").forEach(el=>el.onchange=()=>{
+    const i=+el.dataset.c,s=+el.dataset.s,cur=cards[i].ids.slice();cur[s]=+el.value;sel[key(i)]=cur;drawCli();
+    const f=document.querySelector(`select[data-c="${i}"][data-s="${s}"]`);if(f)f.focus();
+  });
+}
+$("q").oninput=e=>{busca=e.target.value;drawCli()};
+$("vend").innerHTML=Object.keys(VEND).map(v=>`<option>${v}</option>`).join("");
+$("vend").onchange=()=>{drawCli()};
+drawMap();drawDays();drawBars();drawEv();drawCli();
+</script>
+</body>
+</html>

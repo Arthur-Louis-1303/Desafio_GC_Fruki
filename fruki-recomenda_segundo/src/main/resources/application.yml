@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:fruki;DB_CLOSE_DELAY=-1
+  jpa:
+    hibernate.ddl-auto: create
+    open-in-view: false
+  h2.console.enabled: true
+
+fruki:
+  import:
+    arquivo: classpath:dados/DESAFIO_GC_CLAUDE.xlsx
+  scoring:
+    peso-afinidade: 55            # até 55 pts: % de clientes do mesmo perfil que compram o item
+    pontos-familia-conhecida: 10  # item da mesma família que o cliente já compra
+    pontos-calor: 15
+    pontos-frio: 10
+    pontos-evento: 12
+    pontos-abc-a: 10
+    pontos-abc-b: 5
+    limite-calor: 28              # °C (média das máximas da semana)
+    limite-frio: 18
+    horizonte-eventos-dias: 45
+    top-n: 10
+    bloquear-credito-suspenso: false   # na amostra quase todos estão "Suspenso"; em produção use true
+    familias-calor: [REFRI, AGUA, ISOT, SUCO, CHA]
+    familias-frio: [CHA, ENERG]
