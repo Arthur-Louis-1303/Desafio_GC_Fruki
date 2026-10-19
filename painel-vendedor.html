@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel do vendedor · Fruki</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<style>
+:root{--bg:#f4f6f3;--panel:#e0e6df;--ink:#1d2a22;--mut:#56655b;--card:#f4f6f3;--acc:#2c7a4b;--line:#c3cdc3;--hot:#e0702b;--cold:#4a7fd1;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a15;--panel:#1d2923;--ink:#e8efe9;--mut:#9fb0a4;--card:#141d18;--acc:#5fc08a;--line:#34453b}}
+:root[data-theme="dark"]{--bg:#121a15;--panel:#1d2923;--ink:#e8efe9;--mut:#9fb0a4;--card:#141d18;--acc:#5fc08a;--line:#34453b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Bricolage Grotesque",system-ui,sans-serif;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto 14px}
+h1{font-size:22px;font-weight:800;margin:0}
+h2{font-size:18px;font-weight:800;margin:0 0 10px}
+select,button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+main{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:1200px;margin:0 auto}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+section{background:var(--panel);border-radius:22px;padding:18px;min-width:0}
+section[aria-labelledby=h-cli]{order:2;box-shadow:0 0 0 2px var(--acc)}
+section[aria-labelledby=h-vendas]{order:3}
+section[aria-labelledby=h-ev]{order:4}
+.sub{color:var(--mut);font-size:13px;margin:-6px 0 10px}
+.map{max-width:440px}
+.map svg{width:100%;display:block}
+.uf{cursor:pointer;outline:none}
+.uf path{stroke:var(--panel);stroke-width:1;stroke-linejoin:round}
+.uf text{font-size:7px;font-weight:600;fill:#fff;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.uf:hover path{filter:brightness(1.15)}
+.uf:focus-visible path,.uf[aria-pressed=true] path{stroke:var(--ink);stroke-width:2}
+.leg{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut);margin-top:6px}
+.leg i{flex:1;max-width:160px;height:8px;border-radius:6px;background:linear-gradient(90deg,hsl(215 62% 44%),hsl(19 62% 44%))}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.day{background:var(--card);border-radius:10px;padding:6px 4px;text-align:center;font-size:12px}
+.day b{display:block;font-size:15px}
+.day span{display:block}
+.rain{color:var(--cold)}
+.hum{color:var(--acc)}
+.bars{display:flex;align-items:stretch;gap:10px;height:220px;padding-top:6px}
+.bar{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;text-align:center;font-size:12px;color:var(--ink)}
+.bar .col{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.bar .lb{min-height:2.6em;line-height:1.2}
+#backrow{margin-bottom:6px}
+.bar span.t{width:70%;max-width:56px;border-radius:8px 8px 0 0;background:var(--acc);display:block;opacity:.55}
+.bar.max span.t{opacity:1}
+.bar.min span.t{background:var(--hot);opacity:1}
+.hl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.hl div{background:var(--card);border-radius:12px;padding:8px 12px;font-size:13px;color:var(--mut)}
+.hl b{display:block;font-size:15px;color:var(--ink)}
+.hl .mx{border-left:4px solid var(--acc)}
+.hl .mn{border-left:4px solid var(--hot)}
+.bar.f span.t{cursor:pointer}
+.bar:hover span.t{filter:brightness(1.12)}
+.ev{list-style:none;margin:0;padding:0}
+.ev li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ev li:last-child{border:0}
+.ev .soon{border-left:4px solid var(--hot);padding-left:10px}
+.ev .soon b{color:var(--hot)}
+.more{width:100%;margin-top:8px}
+.tag{font-size:11px;background:var(--card);border-radius:20px;padding:1px 8px;color:var(--mut);margin-left:6px}
+.cli{background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.cli>button{all:unset;display:block;width:100%;cursor:pointer}
+.cli>button:focus-visible{outline:2px solid var(--acc)}
+.why{font-size:12px;color:var(--mut)}
+.note{max-width:1200px;margin:12px auto 0;color:var(--mut);font-size:12px}
+#q{width:100%;margin-bottom:8px;padding:9px 12px;border-radius:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chip{border-radius:20px;padding:4px 12px}
+.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:600}
+.mt{background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:13px}
+.mbar{height:8px;background:var(--line);border-radius:6px;margin-top:6px;overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--acc)}
+.sug{margin-top:8px;border-left:4px solid var(--acc);padding-left:10px}
+.cli:not(.open) .sug{display:none}
+.sugt{font-weight:800;font-size:13px;color:var(--acc);margin-bottom:4px}
+.srow{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:6px 0;border-top:1px solid var(--line)}
+.srow select{width:100%;font-weight:600}
+.srow .why{grid-column:1/-1}
+.sc{background:var(--acc);color:var(--bg);border-radius:20px;padding:0 10px;font-weight:800;align-self:center}
+.ajus{color:var(--hot);font-weight:600}
+.chd::after{content:"▾";float:right;color:var(--mut)}
+.cli.open .chd::after{content:"▴"}
+</style>
+</head>
+<body>
+<header>
+  <h1>Painel do vendedor</h1>
+  <label>Vendedor <select id="vend"></select></label>
+</header>
+<main>
+  <section aria-labelledby="h-clima">
+    <h2 id="h-clima">Clima dos próximos 14 dias</h2>
+    <p class="sub" id="clima-sub">Toque em um estado para ver os 14 dias.</p>
+    <div class="map" id="map"></div>
+    <div class="leg"><span>mais frio</span><i></i><span>mais quente</span></div>
+    <div class="days" id="days"></div>
+    <p class="why">Em cada dia: temperatura, chance de chuva (azul) e umidade (verde).</p>
+  </section>
+  <section aria-labelledby="h-vendas">
+    <h2 id="h-vendas">Vendas por família de produtos</h2>
+    <p class="sub" id="v-sub"></p>
+    <div id="backrow"></div><div class="bars" id="bars"></div><div class="hl" id="hl"></div>
+  </section>
+  <section aria-labelledby="h-ev">
+    <h2 id="h-ev">Eventos e datas comemorativas</h2>
+    <p class="sub">Em laranja: faltam até 14 dias.</p>
+    <ul class="ev" id="ev"></ul>
+    <button class="more" id="evmore" aria-controls="ev"></button>
+  </section>
+  <section aria-labelledby="h-cli">
+    <h2 id="h-cli">Meus clientes</h2>
+    <p class="sub">Busque, filtre por tipo de estabelecimento e troque a sugestão de cada cliente para bater a meta.</p>
+    <div id="meta"></div>
+    <input id="q" type="search" placeholder="Buscar cliente ou cidade" aria-label="Buscar cliente ou cidade">
+    <div class="chips" id="chips" role="group" aria-label="Filtrar por tipo de estabelecimento"></div>
+    <p class="sub" id="cnt"></p>
+    <div id="cli"></div>
+  </section>
+</main>
+<p class="note">Protótipo com dados simulados: clima, vendas e clientes. A pontuação combina afinidade com clientes do mesmo segmento, previsão de temperatura e umidade e o próximo evento. O contorno dos estados é simplificado.</p>
+<script>
+const $=id=>document.getElementById(id);
+
+// Contorno simplificado dos estados: pares "longitude,latitude"
+const SHAPES={
+RR:"-64.8,1.6 -64,3.8 -63.4,4.2 -61.5,5 -60.7,5.2 -60.2,5.25 -59.8,4.4 -60,3 -59.2,2.4 -58.5,1.3 -58.9,0.4 -60.5,-1.1 -62,0.3 -63.5,1",
+AP:"-54,2.3 -52.4,2.9 -51.6,4.4 -51,3 -50.4,1.7 -50,0.8 -50.3,0.1 -51,-0.5 -52.6,-1.2 -53.2,0.3",
+PA:"-54,2.3 -53.2,0.3 -52.6,-1.2 -51,-0.5 -50.3,0.1 -49.5,-0.2 -48.5,-0.8 -47.3,-0.6 -46.1,-1.1 -46.2,-3.2 -47.2,-4.2 -48.4,-5.4 -48.8,-7 -49.5,-8.5 -50.2,-9.3 -53.5,-8.9 -55.8,-7.8 -58.4,-7.3 -58.2,-4.5 -57.2,-2.3 -57.8,0 -58.5,1.3 -56.5,2",
+AM:"-73.8,-7.3 -72,-7.5 -70,-7.6 -68.5,-8.5 -66.7,-9.8 -63.5,-8.5 -60.4,-8.8 -58.4,-7.3 -58.2,-4.5 -57.2,-2.3 -57.8,0 -58.9,0.4 -60.5,-1.1 -62,0.3 -63.5,1 -64.8,1.6 -67,2 -69,1.1 -70,0.5 -69.5,-1.2 -70,-4.2",
+AC:"-73.8,-7.3 -72,-7.5 -70,-7.6 -68.5,-8.5 -66.7,-9.8 -67.5,-10.5 -68.7,-11.1 -70.5,-11 -72.2,-9.9 -73,-8.8",
+RO:"-66.7,-9.8 -63.5,-8.5 -60.4,-8.8 -60.3,-11.5 -60.4,-13.5 -62.5,-13 -64.5,-12.3 -65.4,-11.3 -65,-10",
+MT:"-58.4,-7.3 -55.8,-7.8 -53.5,-8.9 -50.2,-9.3 -50.6,-11.5 -50.5,-13 -52,-15 -53.2,-17.8 -55,-17.2 -57.5,-17.6 -58.2,-16.3 -60,-15.2 -60.4,-13.5 -60.3,-11.5 -60.4,-8.8",
+TO:"-48.4,-5.4 -48.8,-7 -49.5,-8.5 -50.2,-9.3 -50.6,-11.5 -50.5,-13 -48.5,-13.3 -46.5,-12.5 -46,-10.5 -46,-10 -47.4,-8 -47.7,-5.8",
+MA:"-46.1,-1.1 -45,-1.5 -44,-2.4 -42.5,-2.7 -41.8,-2.8 -42.8,-4 -43.5,-6 -44.2,-7 -45.4,-9 -46,-10 -47.4,-8 -47.7,-5.8 -48.4,-5.4 -47.2,-4.2 -46.2,-3.2",
+PI:"-41.8,-2.8 -41.2,-3 -41.4,-4.2 -40.5,-6 -40.8,-7.5 -41,-9 -41.4,-9.5 -43,-10.8 -45.8,-10.7 -45.4,-9 -44.2,-7 -43.5,-6 -42.8,-4",
+CE:"-41.2,-3 -39.5,-2.9 -38.5,-3.7 -37.3,-4.6 -38,-5.6 -38.6,-6.8 -39.2,-7.8 -40.5,-7.3 -40.5,-6 -41.4,-4.2",
+RN:"-37.3,-4.6 -35.5,-5.1 -35.1,-5.8 -35,-6.5 -36.7,-6.5 -38,-6.2 -38,-5.6",
+PB:"-35,-6.5 -34.8,-7.2 -35.2,-7.5 -37,-8.1 -38.6,-7.2 -38.6,-6.8 -38,-6.2 -36.7,-6.5",
+PE:"-34.9,-7.4 -34.9,-8.2 -35.3,-9.2 -36.5,-9.5 -37.8,-9.2 -38.8,-9 -40,-8.8 -41,-9 -40.8,-7.5 -40.5,-7.3 -39.2,-7.8 -38.6,-7.2 -37,-8.1 -35.2,-7.5",
+AL:"-35.3,-9.2 -35.9,-9.9 -36.4,-10.5 -37,-10 -37.8,-9.3 -37.8,-9.2 -36.5,-9.5",
+SE:"-36.4,-10.5 -37,-11 -37.4,-11.6 -38.3,-10.9 -38,-10 -37.8,-9.4 -37,-10",
+BA:"-46,-10 -45.8,-10.7 -43,-10.8 -41.4,-9.5 -40,-8.8 -38.8,-9 -37.8,-9.4 -38,-10 -38.3,-10.9 -37.4,-11.6 -38.5,-13 -39,-14.8 -39,-17 -39.7,-18.3 -39.9,-18.2 -40.5,-17.3 -41.5,-16.5 -42.5,-15.7 -43.8,-15 -44.2,-14.2 -46.4,-14.3 -46.5,-12.5 -46,-10.5",
+GO:"-50.5,-13 -48.5,-13.3 -46.5,-12.5 -46.4,-14.3 -46.2,-16 -47.5,-17.5 -48.9,-18.4 -50,-18.9 -51,-19 -52.5,-18.5 -53.2,-17.8 -52,-15",
+DF:"-48.2,-15.5 -47.3,-15.5 -47.3,-16.05 -48.2,-16.05",
+MG:"-51,-19 -51,-20 -50,-20 -48.2,-20 -47.2,-20.7 -46.8,-22 -45.5,-22.6 -44.6,-22.3 -43.5,-22 -42.5,-21.1 -41.8,-21 -41,-20.5 -40.8,-19.5 -39.9,-18.2 -40.5,-17.3 -41.5,-16.5 -42.5,-15.7 -43.8,-15 -44.2,-14.2 -46.4,-14.3 -46.2,-16 -47.5,-17.5 -48.9,-18.4 -50,-18.9",
+ES:"-39.7,-18.3 -39.9,-18.2 -40.8,-19.5 -41,-20.5 -41.8,-21 -41,-21.3 -40.5,-20.7 -40,-19.5",
+RJ:"-41,-21.3 -41.8,-21 -42.5,-21.1 -43.5,-22 -44.6,-22.3 -44.7,-23.2 -43.2,-23 -42,-22.9 -41,-22",
+SP:"-44.6,-22.3 -45.5,-22.6 -46.8,-22 -47.2,-20.7 -48.2,-20 -51,-20 -52,-21.8 -53,-22.6 -51.5,-22.7 -50,-23.5 -49.2,-24 -48.2,-24.8 -48,-25.3 -46.5,-24.2 -45,-23.5 -44.7,-23.2",
+MS:"-53.2,-17.8 -51,-19 -51,-20 -52,-21.8 -53,-22.6 -54.3,-24 -55,-23.8 -55.7,-22.2 -57.8,-22 -57.6,-19 -57.5,-17.6 -55,-17.2",
+PR:"-53,-22.6 -51.5,-22.7 -50,-23.5 -49.2,-24 -48.2,-24.8 -48,-25.3 -48.6,-26.1 -50,-26.4 -51.5,-26.1 -53.8,-25.9 -54.6,-25.5 -54.3,-24.1",
+SC:"-48.6,-26.1 -48.5,-27.6 -48.8,-28.5 -49.7,-29.3 -50.5,-29 -51.5,-28.4 -52.5,-27.5 -53.8,-27.1 -53.8,-25.9 -51.5,-26.1 -50,-26.4",
+RS:"-49.7,-29.3 -50.2,-30.4 -51.2,-31.4 -52.2,-32.2 -53.4,-33.7 -53.2,-32.8 -54.5,-31.6 -55.5,-30.9 -57.6,-30.2 -56,-28.6 -54.5,-27.3 -53.8,-27.1 -52.5,-27.5 -51.5,-28.4 -50.5,-29"};
+const REG={N:"RR AP AM PA AC RO TO",NE:"MA PI CE RN BA PE PB SE AL",CO:"MT GO DF MS",SE:"MG SP RJ ES",S:"PR SC RS"};
+const BASE={N:[32,85],NE:[31,72],CO:[30,48],SE:[28,65],S:[23,75]}; // [temperatura, umidade]
+const reg=uf=>Object.keys(REG).find(r=>REG[r].split(" ").includes(uf));
+const hash=s=>[...s].reduce((a,c)=>a+c.charCodeAt(0),0);
+const fc=uf=>{const h=hash(uf),[t0,u0]=BASE[reg(uf)];return Array.from({length:14},(_,d)=>{const r=(h*7+d*13)%55+(t0<25?15:0);return{t:Math.round(t0+3*Math.sin((d+h)*.9)+(h%3)-1),r,u:Math.min(98,Math.round(u0+r/5+6*Math.sin((d+h)*.7)))}})};
+const media=k=>{const c={};return uf=>c[uf]??=Math.round(fc(uf).reduce((a,x)=>a+x[k],0)/14)};
+const avg=media("t"),umid=media("u");
+const umCls=u=>u>=75?"alta":u<=45?"baixa":"";
+const DICA={alta:"o suor evapora pouco, priorize água e bebidas sem açúcar.",baixa:"ar seco desidrata, priorize água e chás."};
+const color=t=>`hsl(${Math.max(8,Math.min(215,215-(t-18)*14))} 62% 44%)`;
+const wd=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+let uf="RS";
+const goUF=u=>{uf=u;drawMap();drawDays()};
+
+// longitude/latitude -> coordenadas do SVG
+const proj=s=>s.split(" ").map(p=>{const[o,a]=p.split(",");return[((+o+74)*9.7).toFixed(1),((5.3-a)*10).toFixed(1)]});
+function drawMap(){
+  const g=Object.entries(SHAPES).sort(([a],[b])=>(a===uf)-(b===uf)).map(([u,s])=>{
+    const pts=proj(s),[cx,cy]=[0,1].map(i=>(pts.reduce((a,p)=>a+ +p[i],0)/pts.length).toFixed(1));
+    return `<g class="uf" tabindex="0" role="button" data-u="${u}" aria-pressed="${u===uf}" aria-label="${u}, máxima média ${avg(u)} graus"><path d="M${pts.join("L")}Z" fill="${color(avg(u))}"/><text x="${cx}" y="${cy}">${u}</text></g>`}).join("");
+  $("map").innerHTML=`<svg viewBox="0 0 395 395" role="group" aria-label="Mapa do Brasil por estado">${g}</svg>`;
+  document.querySelectorAll(".uf").forEach(el=>{
+    el.onclick=()=>goUF(el.dataset.u);
+    el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();goUF(el.dataset.u)}};
+  });
+}
+function drawDays(){
+  const now=Date.now(),m=avg(uf),um=umCls(umid(uf));
+  $("clima-sub").textContent=`${uf}: máxima média de ${m}°C e umidade de ${umid(uf)}%. ${m>=28?"Calor: bom momento para bebidas geladas.":m<=22?"Mais frio: aposte em chás e energéticos.":"Temperatura amena."}${um?` Umidade ${um}: ${DICA[um]}`:""}`;
+  $("days").innerHTML=fc(uf).map((x,i)=>`<div class="day">${wd[new Date(now+(i+1)*864e5).getDay()]}<b>${x.t}°</b><span class="rain">${x.r}%</span><span class="hum">${x.u}%</span></div>`).join("");
+}
+
+const FAM={
+ "Refrigerante PET":{v:78,p:{"Guaraná 2L":32,"Cola 2L":21,"Laranja 2L":13,"Guaraná Zero 2L":12}},
+ "Refrigerante lata":{v:45,p:{"Guaraná 350 ml":19,"Cola 350 ml":14,"Uva 350 ml":12}},
+ "Energético lata":{v:30,p:{"Elev 473 ml":18,"Elev Zero 473 ml":12}},
+ "Água":{v:38,p:{"Sem gás 1,5 L":22,"Com gás 500 ml":16}},
+ "Chás e sucos":{v:22,p:{"Chá limão 1,5 L":13,"Chá pêssego 1,5 L":9}}};
+const PROD=[
+ {id:1,n:"Guaraná 2L",f:"Refrigerante PET",hot:1},{id:2,n:"Cola 2L",f:"Refrigerante PET",hot:1},
+ {id:3,n:"Guaraná 350 ml",f:"Refrigerante lata",hot:1},{id:4,n:"Elev 473 ml",f:"Energético lata",hot:0},
+ {id:5,n:"Água sem gás 1,5 L",f:"Água",hot:1,sau:1},{id:6,n:"Chá limão 1,5 L",f:"Chás e sucos",hot:1,sau:1},
+ {id:7,n:"Guaraná Zero 2L",f:"Refrigerante PET",hot:0,sau:1},{id:8,n:"Uva 350 ml",f:"Refrigerante lata",hot:0}];
+function drawBars(fam){
+  const e=Object.entries(fam?FAM[fam].p:Object.fromEntries(Object.entries(FAM).map(([k,v])=>[k,v.v]))).sort((a,b)=>b[1]-a[1]);
+  const max=e[0][1],tot=e.reduce((a,x)=>a+x[1],0),last=e.length-1,T=fam?"div":"button";
+  $("h-vendas").textContent=fam?`Produtos: ${fam}`:"Vendas por família de produtos";
+  $("v-sub").textContent="Do mais para o menos vendido, em % do total de 12 meses."+(fam?"":" Toque em uma coluna para ver os produtos.");
+  $("backrow").innerHTML=fam?`<button id="back">← Voltar às famílias</button>`:"";
+  $("bars").innerHTML=e.map(([k,v],i)=>`<${T} class="bar ${fam?"":"f"} ${i?i===last?"min":"":"max"}" data-k="${k}"><b>${Math.round(v/tot*100)}%</b><span class="col"><span class="t" style="height:${v/max*100}%"></span></span><span class="lb">${k}</span></${T}>`).join("");
+  $("hl").innerHTML=`<div class="mx">Mais vendido<b>${e[0][0]}</b>${e[0][1]} mil un.</div><div class="mn">Menos vendido<b>${e[last][0]}</b>${e[last][1]} mil un.</div>`;
+  if(fam)$("back").onclick=()=>drawBars();
+  else document.querySelectorAll(".bar.f").forEach(b=>b.onclick=()=>drawBars(b.dataset.k));
+}
+
+const EV=[["2026-11-02","Finados","Nacional",[]],["2026-11-20","Consciência Negra","Nacional",[]],["2026-11-27","Black Friday","Nacional",["Refrigerante PET","Refrigerante lata"]],
+["2026-12-25","Natal","Nacional",["Refrigerante PET","Refrigerante lata"]],["2026-12-31","Ano Novo","Nacional",["Energético lata","Refrigerante lata","Água"]],
+["2027-02-02","Festa de Iemanjá","Sul e Nordeste",["Água"]],["2027-02-09","Carnaval","Nacional",["Água","Energético lata","Refrigerante lata"]],
+["2027-03-28","Páscoa","Nacional",["Chás e sucos"]],["2027-05-09","Dia das Mães","Nacional",["Refrigerante PET","Chás e sucos"]]]
+.map(([d,n,t,b])=>({d:new Date(d+"T12:00:00"),n,t,b}));
+const days=e=>Math.ceil((e.d-new Date())/864e5);
+const evs=()=>EV.filter(e=>days(e)>=0).sort((a,b)=>a.d-b.d);
+let evAll=false;
+function drawEv(){
+  const l=evs();
+  $("ev").innerHTML=(evAll?l:l.slice(0,3)).map(e=>`<li${days(e)<=14?' class="soon"':""}><span>${e.n}<span class="tag">${e.t}</span><br><span class="why">${e.d.toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"})}</span></span><b>${days(e)===0?"hoje":"em "+days(e)+" d"}</b></li>`).join("");
+  $("evmore").hidden=l.length<=3;
+  $("evmore").textContent=evAll?"Ver menos":`Ver mais (${l.length-3})`;
+  $("evmore").setAttribute("aria-expanded",evAll);
+}
+$("evmore").onclick=()=>{evAll=!evAll;drawEv()};
+
+const VEND={
+ "Rep. 33307 (RS)":[["Mercado Pinheiro","Canoas","RS","Mercado",[1,2,5]],["Padaria Trigo Bom","Porto Alegre","RS","Padaria",[1,3]],["Supermercado Lajeado","Lajeado","RS","Supermercado",[1,2,3,4]],["Minimercado Sol","Gravataí","RS","Mercadinho",[2]]],
+ "Rep. 31402 (Nordeste)":[["Mercadinho Central","Salvador","BA","Mercadinho",[1,3]],["Atacado Recife Sul","Recife","PE","Atacado",[1,2,4]],["Bar da Praça","Fortaleza","CE","Bar",[3]]],
+ "Rep. 30110 (Norte)":[["Mercado Rio Negro","Manaus","AM","Mercado",[1,2]],["Distribuidora Belém","Belém","PA","Atacado",[1,3,5]]]};
+function score(c,p){
+  const why=["clientes do mesmo segmento compram"];let s=hash(c[0]+p.n)%25+30;
+  if(avg(c[2])>=28&&p.hot){s+=15;why.push(`calor (${Math.round(avg(c[2]))}°C)`)}
+  const u=umid(c[2]),um=umCls(u);
+  if(p.sau&&um){s+=10;why.push(`umidade ${um} (${u}%): hidratação`)}
+  if(p.f==="Energético lata"&&um==="alta"){s-=8;why.push("calor úmido: energético menos indicado")}
+  const e=evs().find(e=>e.b.includes(p.f)&&days(e)<=60);
+  if(e){s+=12;why.push(`${e.n} em ${days(e)} d`)}
+  return{p,s,why}
+}
+const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const preco=p=>20+hash(p.n)%40;
+const sel={},abertos=new Set();let fSeg="Todos",busca="";
+const aviso=uf=>{const u=umid(uf),um=umCls(u);return um?`<p class="why ajus">Umidade ${um} (${u}%): ${DICA[um]}</p>`:""};
+const ranking=c=>PROD.filter(p=>!c[4].includes(p.id)).map(p=>score(c,p)).sort((a,b)=>b.s-a.s);
+function drawCli(){
+  const v=$("vend").value,list=VEND[v],key=i=>v+i;
+  const segs=["Todos",...new Set(list.map(c=>c[3]))];
+  if(!segs.includes(fSeg))fSeg="Todos";
+  $("chips").innerHTML=segs.map(s=>`<button class="chip" aria-pressed="${s===fSeg}" data-s="${s}">${s}</button>`).join("");
+  document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{fSeg=b.dataset.s;drawCli()});
+  let total=0;
+  const cards=list.map((c,i)=>{
+    const rk=ranking(c),ids=sel[key(i)]||rk.slice(0,3).map(r=>r.p.id);
+    const rows=ids.map(id=>rk.find(r=>r.p.id===id));
+    total+=rows.reduce((a,r)=>a+preco(r.p),0);
+    return{c,i,rk,ids,rows};
+  });
+  const META=150*list.length,pct=Math.min(100,Math.round(total/META*100));
+  $("meta").innerHTML=`<div class="mt"><b>Meta da semana em itens novos:</b> R$ ${total} de R$ ${META} (${pct}%)<div class="mbar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div></div>`;
+  const q=norm(busca.trim());
+  const vis=cards.filter(x=>(fSeg==="Todos"||x.c[3]===fSeg)&&norm(x.c[0]+" "+x.c[1]).includes(q));
+  $("cnt").textContent=`${vis.length} de ${list.length} clientes`;
+  $("cli").innerHTML=vis.length?vis.map(({c,i,rk,ids,rows})=>`<div class="cli${abertos.has(key(i))?" open":""}"><button class="chd" data-i="${i}" aria-expanded="${abertos.has(key(i))}"><b>${c[0]}</b> <span class="tag">${c[3]}</span><br><span class="why">${c[1]} - ${c[2]} · ${c[4].length} produtos no mix · ${Math.round(avg(c[2]))}°C · umidade ${umid(c[2])}%</span></button>
+    <div class="sug"><div class="sugt">Oferecer agora</div>${aviso(c[2])}${rows.map((r,s)=>`<div class="srow"><select data-c="${i}" data-s="${s}" aria-label="Sugestão ${s+1} para ${c[0]}">${rk.filter(x=>x.p.id===ids[s]||!ids.includes(x.p.id)).map(x=>`<option value="${x.p.id}"${x.p.id===ids[s]?" selected":""}>${x.p.n} (${x.s})</option>`).join("")}</select><span class="sc">${r.s}</span><span class="why">${r.why.join(" · ")} · R$ ${preco(r.p)}/cx${ids[s]!==rk[s].p.id?' · <span class="ajus">ajustado por você</span>':""}</span></div>`).join("")}</div></div>`).join(""):`<p class="why">Nenhum cliente encontrado.</p>`;
+  document.querySelectorAll(".chd").forEach(b=>b.onclick=()=>{
+    const i=b.dataset.i,k=key(i),o=!abertos.has(k);
+    o?abertos.add(k):abertos.delete(k);
+    b.parentElement.classList.toggle("open",o);b.setAttribute("aria-expanded",o);
+    if(o)goUF(list[i][2]);
+  });
+  document.querySelectorAll(".srow select").forEach(el=>el.onchange=()=>{
+    const i=+el.dataset.c,s=+el.dataset.s,cur=cards[i].ids.slice();
+    cur[s]=+el.value;sel[key(i)]=cur;drawCli();
+    document.querySelector(`select[data-c="${i}"][data-s="${s}"]`)?.focus();
+  });
+}
+$("q").oninput=e=>{busca=e.target.value;drawCli()};
+$("vend").innerHTML=Object.keys(VEND).map(v=>`<option>${v}</option>`).join("");
+$("vend").onchange=drawCli;
+drawMap();drawDays();drawBars();drawEv();drawCli();
+</script>
+</body>
+</html>
